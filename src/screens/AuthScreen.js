@@ -1,6 +1,7 @@
 import { View, Text, ImageBackground, TextInput ,Dimensions, TouchableOpacity, Image, Alert} from 'react-native'
 import React, { useState } from 'react'
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 const AuthScreen = ({navigation}) => {
     const {height,width} = Dimensions.get('window');
     const [isLogin, setIsLogin] = useState(true);
@@ -13,9 +14,16 @@ const AuthScreen = ({navigation}) => {
         return;
        }
        try{
-         await auth().createUserWithEmailAndPassword(userName,password);
+        const userCredential = await auth().createUserWithEmailAndPassword(userName, password);
+        const user = userCredential.user;
+
+       
+        await firestore().collection('users').doc(user.uid).set({
+            email: user.email,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+        });
          Alert.alert('Sign Up Successfull');
-         navigation.navigate('HomeScreen')
+         navigation.navigate('BottomTab')
        }catch(error){
         if (error.code === 'auth/email-already-in-use') {
           Alert.alert('That email address is already in use!');
@@ -98,6 +106,7 @@ const AuthScreen = ({navigation}) => {
     }}
      />
      {!isLogin &&(
+      
        <TextInput
        placeholder='Password again'
        placeholderTextColor={'lightgrey'}

@@ -5,6 +5,7 @@ import DotComponent from '../components/DotComponent';
 
 const OnBoardingScreen = ({navigation}) => {
     const{height,width}= Dimensions.get('window')
+    
   return (
     <View style={{ flex: 1 }}>
       <Onboarding
